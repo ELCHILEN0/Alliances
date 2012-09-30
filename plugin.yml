@@ -1,0 +1,14 @@
+name: Alliances
+author: ELCHILEN0
+description: The ultimate replacement to factions!
+version: 1.0.0
+website: http://www.novuscraft.org
+main: com.JnaniDev.Alliances.Alliances
+depends: [Vault]
+commands:
+   alliance:
+     description: Displays help for Alliances
+     aliases: al
+permissions:
+   alliances.reload:
+     description: Permission to reload the configuration from the disk.
