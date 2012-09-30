@@ -3,9 +3,11 @@ package com.JnaniDev.Alliances;
 import java.io.File;
 import java.util.logging.Logger;
 
+import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -14,6 +16,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.JnaniDev.Alliances.Managers.AllianceManager;
 import com.JnaniDev.Alliances.Managers.CommandManager;
 import com.JnaniDev.Alliances.Managers.PlayerManager;
+import com.JnaniDev.Commands.AdminRankCmd;
 import com.JnaniDev.Commands.CreateCmd;
 import com.JnaniDev.Commands.DescCmd;
 import com.JnaniDev.Commands.DisbandCmd;
@@ -21,6 +24,7 @@ import com.JnaniDev.Commands.InviteCmd;
 import com.JnaniDev.Commands.JoinCmd;
 import com.JnaniDev.Commands.KickCmd;
 import com.JnaniDev.Commands.LeaveCmd;
+import com.JnaniDev.Commands.ModRankCmd;
 import com.JnaniDev.Commands.UninviteCmd;
 import com.JnaniDev.Listeners.BlockListener;
 import com.JnaniDev.Listeners.EntityListener;
@@ -34,6 +38,7 @@ public class Alliances extends JavaPlugin {
 	private PlayerManager playerManager;
 	private CommandManager commandManager;
 	private Economy economy;
+	public static Vault vault = null;
 	public SQL database;
 
 	public void onEnable() {
@@ -43,27 +48,22 @@ public class Alliances extends JavaPlugin {
 		reloadConfiguration();
 		
 		// Setup Custom Managers
+		PluginManager pm = getServer().getPluginManager();
+		CheckVault(pm);
 		allianceManager = new AllianceManager(this);
 		playerManager = new PlayerManager(this);
 		commandManager = new CommandManager(this);
+		if (vault != null) {
 		setupEconomy();
-		
+		}		
 		// Setup HashMaps from SQL
 		// Players format is <PlayerName, PlayerObject>
 		// Alliances format is <AllianceIndex, AllianceObject>
 		playerManager.loadPlayers();
 		allianceManager.loadAlliances();
-		commandManager.addCommand(new JoinCmd(this));
-		commandManager.addCommand(new LeaveCmd(this));
-		commandManager.addCommand(new CreateCmd(this));
-		commandManager.addCommand(new DescCmd(this));
-		commandManager.addCommand(new InviteCmd(this));
-		commandManager.addCommand(new UninviteCmd(this));
-		commandManager.addCommand(new KickCmd(this));
-		commandManager.addCommand(new DisbandCmd(this));		
+		registerCmd();
 		
 		// Setup Event Listeners
-		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(new PlayerListener(this), this);
 		pm.registerEvents(new BlockListener(), this);
 		pm.registerEvents(new EntityListener(), this);
@@ -155,6 +155,29 @@ public class Alliances extends JavaPlugin {
 				+ "`lastLogin` MEDIUMTEXT NULL"
 				+ " )");
 		
+	}
+	public void registerCmd() {
+		commandManager.addCommand(new JoinCmd(this));
+		commandManager.addCommand(new AdminRankCmd(this));
+		commandManager.addCommand(new ModRankCmd(this));
+		commandManager.addCommand(new LeaveCmd(this));
+		commandManager.addCommand(new CreateCmd(this));
+		commandManager.addCommand(new DescCmd(this));
+		commandManager.addCommand(new InviteCmd(this));
+		commandManager.addCommand(new UninviteCmd(this));
+		commandManager.addCommand(new KickCmd(this));
+		commandManager.addCommand(new DisbandCmd(this));		
+	}
+	
+	private void CheckVault(PluginManager pm) {
+        Plugin hc = pm.getPlugin("Vault");
+        if (hc != null) {
+        	vault = (Vault)hc;
+        	log.info("Vault found, enabling Economy!");
+        }
+        else if (hc == null) {
+        log.info("Vault not found, disabling Economy!");
+        }
 	}
 	
 	public AllianceManager getAllianceManager() {
