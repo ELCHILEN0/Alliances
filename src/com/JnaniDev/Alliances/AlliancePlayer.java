@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AlliancePlayer implements Serializable {
+public class AlliancePlayer implements Serializable { //asdasdasd
 	private static final long serialVersionUID = 1L;
 	private int kills;
 	private int deaths;
