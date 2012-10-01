@@ -14,6 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.JnaniDev.Alliances.Managers.AllianceManager;
 import com.JnaniDev.Alliances.Managers.CommandManager;
 import com.JnaniDev.Alliances.Managers.PlayerManager;
+import com.JnaniDev.Commands.HelpCmd;
 import com.JnaniDev.Listeners.BlockListener;
 import com.JnaniDev.Listeners.EntityListener;
 import com.JnaniDev.Listeners.PlayerListener;
@@ -79,14 +80,22 @@ public class Alliances extends JavaPlugin {
 	    checkDatabase();
 	}
 	
-    private boolean setupEconomy()
-    {
+	public void registerCommands() {
+		commandManager.addCommand("help", new HelpCmd(this));
+	}
+	
+    private void setupEconomy() {    	
+    	if (getServer().getPluginManager().getPlugin("Vault") != null) {
+			log.info("Vault found, preparing economy integration!");
+    	} else {
+    		log.info("Vault not found, disabling economoy integration!");
+    		return;
+    	}
+    	
         RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
         if (economyProvider != null) {
             economy = economyProvider.getProvider();
         }
-
-        return (economy != null);
     }
 
 	
