@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import com.JnaniDev.Alliances.Alliance;
 import com.JnaniDev.Alliances.AlliancePlayer;
@@ -27,61 +27,106 @@ public class AllianceManager {
 		alliances = new HashMap<Integer, Alliance>();
 	}
 	
-	public void broadcastToAlliance(String message, String alliance) {
-		for(String name : plugin.getPlayerManager().players.keySet()) {
-			if(plugin.getPlayerManager().getPlayer(name).getAlliance() == getAllianceId(alliance)) {
-				if((Bukkit.getPlayerExact(name) != null) && (Bukkit.getPlayerExact(name).isOnline()))
-					Bukkit.getPlayerExact(name).sendMessage(message);
-			}
-		}
+	/**
+	 * Get all the Alliances
+	 */
+	public Collection<Alliance> getAlliances() {
+		return alliances.values();
 	}
 	
-	public void broadcastToAlliance(String message, int alliance) {
-		for(String name : plugin.getPlayerManager().players.keySet()) {
-			if(plugin.getPlayerManager().getPlayer(name).getAlliance() == alliance) {
-				if((Bukkit.getPlayerExact(name) != null) && (Bukkit.getPlayerExact(name).isOnline()))
-					Bukkit.getPlayerExact(name).sendMessage(message);
-			}
-		}
+	/**
+	 * Get all the Alliance ID's
+	 */
+	public Collection<Integer> getAllianceIDs() {
+		return alliances.keySet();
 	}
 	
+	/**
+	 * Check if an Alliance exists
+	 * @param id
+	 * @param name
+	 */
+	public boolean allianceExists(int id) {
+		return getAlliance(id) != null;
+	}
+	
+	public boolean allianceExists(String name) {
+		return getAlliance(name) != null;
+	}
+	
+	/**
+	 * Get an Alliance by its ID
+	 * @param id
+	 */
+	public Alliance getAlliance(int id) {
+		return alliances.get(id);
+	}
+	
+	/**
+	 * Get an Alliance by its name
+	 * @param name
+	 */
 	public Alliance getAlliance(String name) {
-		for(Integer key : alliances.keySet()) {
-			if(alliances.get(key).getName().equalsIgnoreCase(name))
-				return alliances.get(key);
+		for(Integer key : getAllianceIDs()) {
+			if(getAlliance(key).getName().equals(name)) {
+				return getAlliance(key);
+			}
 		}
 		return null;
 	}
 	
-	public Alliance getAlliance(Integer id) {
-		return alliances.get(id);
-	}
-	
-	public int getAllianceId(String name) {
-		for(Integer key : alliances.keySet()) {
-			if(alliances.get(key).getName().equalsIgnoreCase(name))
-				return key;
-		}
-		return 0;
-	}
-	
-	public Collection<AlliancePlayer> getPlayers(int id) {
-		Collection<AlliancePlayer> players = Collections.emptySet();
-		for(String name : plugin.getPlayerManager().players.keySet()) {
+	/**
+	 * Gets player names in a specific Alliance
+	 * @param id
+	 */
+	public Collection<String> getPlayerNames(int id) {
+		Collection<String> names = Collections.emptySet();
+
+		for(String name : plugin.getPlayerManager().getPlayerNames()) {
 			if(plugin.getPlayerManager().getPlayer(name).getAlliance() == id) {
-				players.add(plugin.getPlayerManager().getPlayer(name));
+				names.add(name);
 			}
 		}
+		return names;	
+	}
+	
+	/**
+	 * Gets AlliancePlayers in a specific Alliance
+	 * @param id
+	 */
+	public Collection<AlliancePlayer> getPlayers(int id) {
+		Collection<AlliancePlayer> players = Collections.emptySet();
+
+		for(AlliancePlayer player : plugin.getPlayerManager().getPlayers()) {
+			if(player.getAlliance() == id) {
+				players.add(player);
+			}
+		}
+		return players;	
+	}
+	
+	/**
+	 * Gets Players in a specific Alliance
+	 * @param id
+	 */
+	public Collection<Player> getOnlinePlayers(int id) {
+		Collection<Player> players = Collections.emptySet();
+		
+		for(Player player : plugin.getServer().getOnlinePlayers()) {
+			if(getPlayerNames(id).contains(player.getName())) {
+				players.add(player);
+			}
+		}
+		
 		return players;
 	}
 	
-	public boolean allianceExists(String name) {
-		return (getAlliance(name) != null) ? true : false;
-	}
-	
-	public void createAlliance(String name) {
+	/**
+	 * Create an empty Alliance object
+	 */
+ 	public void createAlliance() {
         Map<String, Object> alliance = new HashMap<String, Object>();
-        alliance.put("name", name);
+        alliance.put("name","");
         alliance.put("desc", "");
         alliance.put("partners", "");
         alliance.put("brothers", "");
@@ -92,6 +137,9 @@ public class AllianceManager {
         alliances.put(alliances.size() + 1, new Alliance(alliance));
 	}
 	
+	/**
+	 * Load all the Alliances
+	 */
 	public void loadAlliances() {
         Map<Integer, Alliance> alliances = new HashMap<Integer, Alliance>();
 		String sql = "SELECT * FROM `?`";
@@ -118,13 +166,26 @@ public class AllianceManager {
 		this.alliances = alliances;
 	}
 	
+	/**
+	 * Save all the Alliances
+	 */
 	public void saveAlliances() {
-		for(Integer key : alliances.keySet()) {
+		for(int key : alliances.keySet()) {
 			insertOrUpdate(key);
 		}
 	}
 	
-	public void insertOrUpdate(Integer id) {
+	/**
+	 * Save a specific Alliance
+	 * @param id
+	 */
+	public void saveAlliance(int id) {
+		if(alliances.containsKey(id)) {
+			insertOrUpdate(id);
+		}
+	}
+	
+	public void insertOrUpdate(int id) {
 		String count = "SELECT COUNT(*) FROM `?` WHERE `?` = '?'";
 		count = count.replaceFirst("\\?", alliancesTable);
 		count = count.replaceFirst("\\?", "id");
@@ -135,7 +196,7 @@ public class AllianceManager {
 			updateAlliance(id);
 	}
 	
-	public void insertAlliance(Integer id) {
+	public void insertAlliance(int id) {
 		Alliance alliance = alliances.get(id);
 		String sql = "INSERT INTO `?` ( `?`, `?`, `?`, `?`, `?`, `?`, `?`, `?`, `?` ) VALUES ( '?', '?', '?', '?', '?', '?', '?', '?', '?' )";
 		sql = sql.replaceFirst("\\?", alliancesTable);
@@ -160,7 +221,7 @@ public class AllianceManager {
 		database.query(sql);
 	}
 	
-	public void updateAlliance(Integer id) {
+	public void updateAlliance(int id) {
 		Alliance alliance = alliances.get(id);
 		String sql = "UPDATE `?` SET `?` = '?', `?` = '?', `?` = '?', `?` = '?', `?` = '?', `?` = '?', `?` = '?', `?` = '?' WHERE `?` = '?'";
 		sql = sql.replaceFirst("\\?", alliancesTable);
@@ -185,7 +246,11 @@ public class AllianceManager {
 		database.query(sql);
 	}
 
-	public void cleanAlliance(Integer id) {
+	/**
+	 * Delete an Alliance
+	 * @param id
+	 */
+	public void cleanAlliance(int id) {
 		alliances.remove(id);
 		String sql = "DELETE FROM `?` WHERE `?` = '?'";
 		sql = sql.replaceFirst("\\?", alliancesTable);

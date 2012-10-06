@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jooq.Result;
 
 import com.JnaniDev.Alliances.AlliancePlayer;
 import com.JnaniDev.Alliances.Alliances;
@@ -23,22 +24,47 @@ public class PlayerManager {
 		this.playersTable = plugin.getConfig().getString("storage.tablePrefix") + "players";
 	}
 	
+	/**
+	 * Get all the player names
+	 */
+	public Collection<String> getPlayerNames() {
+		return players.keySet();
+	}
+	
+	/**
+	 * Get all the AlliancePlayers
+	 */
 	public Collection<AlliancePlayer> getPlayers() {
 		return players.values();
 	}
 	
+	/**
+	 * Get a specific AlliancePlayer
+	 * @param name
+	 */
 	public AlliancePlayer getPlayer(String name) {
 		return players.get(name);
 	}
 	
+	/**
+	 * Get a specific AlliancePlayer
+	 * @param player
+	 */
 	public AlliancePlayer getPlayer(Player player) {
-		return getPlayer(player.getName());
+		return players.get(player.getName());
 	}
 	
+	/**
+	 * Get a specific AlliancePlayer
+	 * @param sender
+	 */
 	public AlliancePlayer getPlayer(CommandSender sender) {
-		return getPlayer(sender.getName());
+		return players.get(sender.getName());
 	}
 	
+	/**
+	 * Load the players from the database
+	 */
 	public void loadPlayers() {
         Map<String, AlliancePlayer> players = new HashMap<String, AlliancePlayer>();
 		String sql = "SELECT * FROM `?`";
@@ -64,15 +90,22 @@ public class PlayerManager {
 		this.players = players;
 	}
 	
+	/**
+	 * Save the players to the database
+	 */
 	public void savePlayers() {
 		for(String key : players.keySet()) {
 			insertOrUpdate(key);
 		}
 	}
 	
-	public void savePlayer(String player) {
-		if(players.containsKey(player))
-			insertOrUpdate(player);
+	/**
+	 * Save a player to the database
+	 * @param name
+	 */
+	public void savePlayer(String name) {
+		if(players.containsKey(name))
+			insertOrUpdate(name);
 	}
 	
 	public void insertOrUpdate(String name) {
@@ -128,6 +161,9 @@ public class PlayerManager {
 		database.query(sql);
 	}
 
+	/**
+	 * Delete a player
+	 */
 	public void cleanPlayer(String name) {
 		String sql = "DELETE FROM `?` WHERE `?` = '?'";
 		sql = sql.replaceFirst("\\?", playersTable);
