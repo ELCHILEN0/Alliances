@@ -123,8 +123,10 @@ public class AllianceManager {
 	
 	/**
 	 * Create an empty Alliance object
+	 * 
+	 * @return int
 	 */
- 	public void createAlliance() {
+ 	public int createAlliance() {
         Map<String, Object> alliance = new HashMap<String, Object>();
         alliance.put("name","");
         alliance.put("desc", "");
@@ -135,6 +137,7 @@ public class AllianceManager {
         alliance.put("invited", ArrayUtil.asList(""));
         alliance.put("lastLogin", System.currentTimeMillis());
         alliances.put(alliances.size() + 1, new Alliance(alliance));
+        return alliances.size() + 1;
 	}
 	
 	/**

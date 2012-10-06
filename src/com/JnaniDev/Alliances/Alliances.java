@@ -1,6 +1,9 @@
 package com.JnaniDev.Alliances;
 
 import java.io.File;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.util.logging.Logger;
 
 import net.milkbowl.vault.economy.Economy;
@@ -14,7 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.JnaniDev.Alliances.Managers.AllianceManager;
 import com.JnaniDev.Alliances.Managers.CommandManager;
 import com.JnaniDev.Alliances.Managers.PlayerManager;
-import com.JnaniDev.Commands.HelpCmd;
+import com.JnaniDev.Commands.TestCmd;
 import com.JnaniDev.Listeners.BlockListener;
 import com.JnaniDev.Listeners.EntityListener;
 import com.JnaniDev.Listeners.PlayerListener;
@@ -59,6 +62,7 @@ public class Alliances extends JavaPlugin {
 		
 		// Setup Executors
 		getCommand("alliance").setExecutor(commandManager);
+		registerCommands();
 		
 	    long endTime = System.currentTimeMillis();
 	    log.info(desc.getName() + " version " + desc.getVersion() + " is enabled! Took " + (endTime - beginTime) + "ms.");
@@ -67,7 +71,6 @@ public class Alliances extends JavaPlugin {
 	public void onDisable() {
     	playerManager.savePlayers();
     	allianceManager.saveAlliances();
-    	commandManager.clearCommands();
         log.info( desc.getName() + " version " + desc.getVersion() + " is disabled!" );
     }
     
@@ -81,11 +84,11 @@ public class Alliances extends JavaPlugin {
 	}
 	
 	public void registerCommands() {
-		commandManager.addCommand("help", new HelpCmd(this));
+		commandManager.registerClass(TestCmd.class);
 	}
 	
     private void setupEconomy() {    	
-    	if (getServer().getPluginManager().getPlugin("Vault") != null) {
+    	if (getServer().getPluginManager().isPluginEnabled("Vault")) {
 			log.info("Vault found, preparing economy integration!");
     	} else {
     		log.info("Vault not found, disabling economoy integration!");
@@ -114,6 +117,7 @@ public class Alliances extends JavaPlugin {
 		} else {
 			database = new SQL(this, getDataFolder() + File.separator + "data.dat");
 		}
+		
 		
 		// Create players database
 		database.query("CREATE TABLE IF NOT EXISTS "

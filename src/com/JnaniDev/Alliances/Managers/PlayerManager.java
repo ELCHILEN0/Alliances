@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.jooq.Result;
 
 import com.JnaniDev.Alliances.AlliancePlayer;
 import com.JnaniDev.Alliances.Alliances;

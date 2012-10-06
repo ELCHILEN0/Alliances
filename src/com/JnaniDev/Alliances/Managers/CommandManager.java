@@ -1,92 +1,97 @@
 package com.JnaniDev.Alliances.Managers;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
 
 import com.JnaniDev.Alliances.Alliances;
 import com.JnaniDev.Commands.BaseCommand;
 
 public class CommandManager implements CommandExecutor {
 	private Alliances plugin;
-	private LinkedHashMap<String, BaseCommand> commands = new LinkedHashMap<String, BaseCommand>();
+	private Map<String, Method> commands = new HashMap<String, Method>();
 	
 	public CommandManager(Alliances plugin) {
 		this.plugin = plugin;
 	}
+	
+	/**
+	 * Register all commands in a class
+	 * 
+	 * @param commandClass
+	 */
+	public void registerClass(Class<?> commandClass) {
+		// Loop through all the classes methods
+        Method[] methods = commandClass.getMethods();
+        for (Method method : methods) {
+        	// Check if BaseCommand is part of the method
+            if (method.isAnnotationPresent(BaseCommand.class)) {
+                BaseCommand base = method.getAnnotation(BaseCommand.class);
 
-	public void addCommand(String name, BaseCommand command) {
-		commands.put(name, command);
+                // Put the commands into the map
+        		for(String alias : base.aliases()) {
+        			commands.put(alias, method);
+        		}
+            }
+        }
 	}
 	
-	public void removeCommand(String name) {
-		commands.remove(name);
-	}
-	
-	public void clearCommands() {
+	/**
+	 * Unregister all commands
+	 */
+	public void unregisterCommands() {
 		commands.clear();
 	}
 	
-	public Collection<BaseCommand> getCommands() {
-		return commands.values();
+	/**
+	 * Invoke a command
+	 * 
+	 * @param command
+	 * @param object
+	 */
+	public void dispatchCommand(String command, Object... object) {
+		try {
+			commands.get(command).invoke(commands.get(command).getDeclaringClass().newInstance(), object);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
-	@Override
+	/**
+	 * Get BaseCommand from a specified string
+	 * 
+	 * @return BaseCommand or NULL
+	 */
+	public BaseCommand getBaseCommand(String command) {
+        if (commands.get(command).isAnnotationPresent(BaseCommand.class))
+            return commands.get(command).getAnnotation(BaseCommand.class);
+        return null;
+	}
+	
+		
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		if(args.length == 0) {
-			// Display help
+			sender.sendMessage("Display info for plugin here!");
 			return false;
 		}
 		
 		if(!(commands.containsKey(args[0]))) {
-			// No command found
+			sender.sendMessage("The specified command was not found!");
 			return false;
 		}
 		
-		// The command can now be safely grabbed from the arguments
-		BaseCommand command = commands.get(args[0]);
-		
-		// Player Execution Check
-		if((sender instanceof Player) && !(command.allowPlayerExecution())) {
-			// Can't be run as player
+		BaseCommand command = this.getBaseCommand(args[0]);
+		sender.sendMessage(command.min() + " " + command.max() + " " + args.length);
+		if((args.length < command.min()) || (args.length > command.max() && command.max() != -1)) {
+			sender.sendMessage("/" + commandLabel + " " + command.aliases()[0] + " " + command.usage());
 			return false;
 		}
 		
-		// Console Execution Check
-		if((sender instanceof ConsoleCommandSender) && !(command.allowConsoleExecution())) {
-			// Can't be run as console
-			return false;
-		}
-
-		// Argument Length Check
-		if((command.minArgs() >= args.length)) {
-			// Display usage
-			return false;
-		}
-		
-		// TODO: Update for any economy changes.  Convert config check to a solid variable check.
-		if((plugin.getConfig().getBoolean("economy.enabled")) && (plugin.getEconomy().getBalance(sender.getName()) < command.cost())) {
-			// Not enough money
-			return false;
-		}
-		
-		// This runs custom validation and checks that you provide.
-		if(!(command.validate(sender, commandLabel, args))) return false;
-		
-		// This runs the economy code.
-		if(plugin.getConfig().getBoolean("economy.enabled")) {
-			if(commands.get(args[0]).cost() > 0)
-				plugin.getEconomy().withdrawPlayer(sender.getName(), commands.get(args[0]).cost());
-			else
-				plugin.getEconomy().depositPlayer(sender.getName(), -(commands.get(args[0]).cost()));
-		}
-
-		command.execute(sender, commandLabel, args);
-		return true;	
+		dispatchCommand(args[0], sender, commandLabel, args);
+		return false;
 	}
 }
