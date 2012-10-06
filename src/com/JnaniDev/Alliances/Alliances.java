@@ -17,6 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.JnaniDev.Alliances.Managers.AllianceManager;
 import com.JnaniDev.Alliances.Managers.CommandManager;
 import com.JnaniDev.Alliances.Managers.PlayerManager;
+import com.JnaniDev.Commands.InviteCmd;
 import com.JnaniDev.Commands.TestCmd;
 import com.JnaniDev.Listeners.BlockListener;
 import com.JnaniDev.Listeners.EntityListener;
@@ -85,6 +86,7 @@ public class Alliances extends JavaPlugin {
 	
 	public void registerCommands() {
 		commandManager.registerClass(TestCmd.class);
+		commandManager.registerClass(InviteCmd.class);
 	}
 	
     private void setupEconomy() {    	
