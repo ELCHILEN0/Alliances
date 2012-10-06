@@ -14,7 +14,6 @@ import com.JnaniDev.Alliances.Alliances;
 public class PlayerListener implements Listener {
 	private Alliances plugin;
 	
-	
 	public PlayerListener(Alliances plugin) {
 		this.plugin = plugin;
 	}

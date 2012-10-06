@@ -11,7 +11,6 @@ public class SaveTask implements Runnable {
 	public void run() {
 		plugin.getPlayerManager().savePlayers();
 		plugin.getAllianceManager().saveAlliances();
-		plugin.log.info("Saving data...");
 	}
 
 }

@@ -33,11 +33,6 @@ public @interface BaseCommand {
 	 * @return A short description for the command.
 	 */
 	String desc();
-	
-	/**
-	 * @return A long description for the command.
-	 */
-	String help() default "";
 
 	/**
 	 * The minimum number of arguments. This should be 0 or above.

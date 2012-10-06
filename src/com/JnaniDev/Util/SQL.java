@@ -58,6 +58,7 @@ public class SQL
 		}
 	}
 	
+	
 	/**
 	 * Get a string from query(), automatically checks for null.
 	 * 

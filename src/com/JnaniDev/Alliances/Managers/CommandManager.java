@@ -85,7 +85,7 @@ public class CommandManager implements CommandExecutor {
 		}
 		
 		BaseCommand command = this.getBaseCommand(args[0]);
-		sender.sendMessage(command.min() + " " + command.max() + " " + args.length);
+
 		if((args.length < command.min()) || (args.length > command.max() && command.max() != -1)) {
 			sender.sendMessage("/" + commandLabel + " " + command.aliases()[0] + " " + command.usage());
 			return false;
