@@ -1,9 +1,6 @@
 package com.JnaniDev.Alliances;
 
 import java.io.File;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.util.logging.Logger;
 
 import net.milkbowl.vault.economy.Economy;

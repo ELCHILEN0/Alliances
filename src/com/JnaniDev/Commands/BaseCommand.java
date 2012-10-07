@@ -48,4 +48,18 @@ public @interface BaseCommand {
 	 * @return the maximum number of arguments
 	 */
 	int max() default -1;
+	
+	/**
+	 * Allow the command to be run from a player
+	 * 
+	 * @return can be run as player
+	 */
+	boolean allowPlayer() default true;
+	
+	/**
+	 * Allow the command to be run from console
+	 * 
+	 * @return can be run as console
+	 */
+	boolean allowConsole() default true;
 }
