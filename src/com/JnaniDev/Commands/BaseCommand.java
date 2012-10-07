@@ -65,4 +65,11 @@ public @interface BaseCommand {
 	 * @return can be run as console
 	 */
 	boolean allowConsole() default true;
+	
+	/**
+	 * Hide the command
+	 * 
+	 * @return is hidden
+	 */
+	boolean hidden() default false;
 }

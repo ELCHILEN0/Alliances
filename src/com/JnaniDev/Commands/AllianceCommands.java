@@ -31,7 +31,7 @@ public class AllianceCommands {
 
 	}
 	
-	@BaseCommand(aliases={"uninvite"}, desc="UnInvite a player to your Alliance.", usage="<Player>", min=2, allowConsole=false)
+	@BaseCommand(aliases={"uninvite"}, desc="Uninvite a player from your Alliance.", usage="<Player>", min=2, allowConsole=false)
 	public void uninvite(CommandSender sender, String commandLabel, String[] args, Alliances plugin) {
 
 	}
@@ -44,5 +44,10 @@ public class AllianceCommands {
 	@BaseCommand(aliases={"ban"}, desc="Ban a player from your Alliance.", usage="<Player>", min=2, allowConsole=false)
 	public void ban(CommandSender sender, String commandLabel, String[] args, Alliances plugin) {
 
+	}
+	
+	@BaseCommand(aliases={"sethome"}, desc="Sets your Alliance home.", min=1, allowConsole=false)
+	public void setHome(CommandSender sender, String commandLabel, String[] args, Alliances plugin) {
+		
 	}
 }
