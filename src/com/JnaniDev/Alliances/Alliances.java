@@ -10,6 +10,7 @@ import com.JnaniDev.Alliances.Managers.AllianceManager;
 import com.JnaniDev.Alliances.Managers.CommandManager;
 import com.JnaniDev.Alliances.Managers.PlayerManager;
 import com.JnaniDev.Commands.AllianceCommands;
+import com.JnaniDev.Commands.HelpCommand;
 import com.JnaniDev.Commands.PlayerCommands;
 import com.JnaniDev.Commands.TestCmd;
 import com.JnaniDev.Listeners.BlockListener;
@@ -93,6 +94,7 @@ public class Alliances extends JavaPlugin {
 		commandManager.registerClass(TestCmd.class);
 		commandManager.registerClass(AllianceCommands.class);
 		commandManager.registerClass(PlayerCommands.class);
+		commandManager.registerClass(HelpCommand.class);
 	}
 	
 	
@@ -173,5 +175,14 @@ public class Alliances extends JavaPlugin {
 	 */
 	public PlayerManager getPlayerManager() {
 		return playerManager;
+	}
+	
+	/**
+	 * Gets the CommandManager
+	 * 
+	 * @return CommandManager
+	 */
+	public CommandManager getCommandManager() {
+		return commandManager;
 	}
 }

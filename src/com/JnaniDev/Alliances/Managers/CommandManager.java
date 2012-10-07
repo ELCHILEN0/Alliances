@@ -1,8 +1,6 @@
 package com.JnaniDev.Alliances.Managers;
 
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,20 +61,6 @@ public class CommandManager implements CommandExecutor {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-	
-	/**
-	 * Get all the BaseCommands that are currently registered
-	 * 
-	 * @return Collection<BaseCommand>
-	 */
-	public Collection<BaseCommand> getBaseCommands() {
-		Collection<BaseCommand> baseCommands = Collections.emptySet();
-		for(Method method : commands.values()) {
-			if((method.isAnnotationPresent(BaseCommand.class)) && (baseCommands.contains(method.getAnnotation(BaseCommand.class)))) 
-				baseCommands.add(method.getAnnotation(BaseCommand.class));
-		}
-		return baseCommands;
 	}
 	
 	/**
