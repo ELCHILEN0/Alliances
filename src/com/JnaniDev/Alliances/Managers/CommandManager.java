@@ -1,8 +1,11 @@
 package com.JnaniDev.Alliances.Managers;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.command.Command;
@@ -83,10 +86,13 @@ public class CommandManager implements CommandExecutor {
 	 * @return Collection<BaseCommand>
 	 */
 	public Collection<BaseCommand> getBaseCommands() {
-		Collection<BaseCommand> bc = null;
+		ArrayList<BaseCommand> bc = new ArrayList<BaseCommand>();
 		for(Method method : commands.values()) {
 	        if (method.isAnnotationPresent(BaseCommand.class)) {
-	        	bc.add(method.getAnnotation(BaseCommand.class));
+	        	BaseCommand command = method.getAnnotation(BaseCommand.class);
+	        	if(!(bc.contains(command))) {
+	        		bc.add(method.getAnnotation(BaseCommand.class));
+	        	}
 	        }
 		}
 		return bc;
