@@ -1,12 +1,16 @@
 package com.JnaniDev.Alliances.Managers;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
 
 import com.JnaniDev.Alliances.Alliances;
 import com.JnaniDev.Commands.BaseCommand;
@@ -62,6 +66,20 @@ public class CommandManager implements CommandExecutor {
 	}
 	
 	/**
+	 * Get all the BaseCommands that are currently registered
+	 * 
+	 * @return Collection<BaseCommand>
+	 */
+	public Collection<BaseCommand> getBaseCommands() {
+		Collection<BaseCommand> baseCommands = Collections.emptySet();
+		for(Method method : commands.values()) {
+			if((method.isAnnotationPresent(BaseCommand.class)) && (baseCommands.contains(method.getAnnotation(BaseCommand.class)))) 
+				baseCommands.add(method.getAnnotation(BaseCommand.class));
+		}
+		return baseCommands;
+	}
+	
+	/**
 	 * Get BaseCommand from a specified string
 	 * 
 	 * @return BaseCommand or NULL
@@ -85,8 +103,19 @@ public class CommandManager implements CommandExecutor {
 		}
 		
 		BaseCommand command = this.getBaseCommand(args[0]);
+		
+		if((sender instanceof Player) && !(command.allowPlayer())) {
+			sender.sendMessage("This command cannot be run as a player!");
+			return false;
+		}
+		
+		if((sender instanceof ConsoleCommandSender) && !(command.allowConsole())) {
+			sender.sendMessage("This command cannot be run from the console!");
+			return false;
+		}
 
 		if((args.length < command.min()) || (args.length > command.max() && command.max() != -1)) {
+			sender.sendMessage(command.desc());
 			sender.sendMessage("/" + commandLabel + " " + command.aliases()[0] + " " + command.usage());
 			return false;
 		}
