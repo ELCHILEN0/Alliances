@@ -1,6 +1,7 @@
 package com.JnaniDev.Alliances.Managers;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,12 +13,13 @@ import org.bukkit.entity.Player;
 
 import com.JnaniDev.Alliances.Alliances;
 import com.JnaniDev.Commands.BaseCommand;
+import com.JnaniDev.Util.Log;
 
 public class CommandManager implements CommandExecutor {
 	private Alliances plugin;
 	private Map<String, Method> commands = new HashMap<String, Method>();
 	
-	public CommandManager(Alliances plugin) {
+	public CommandManager(Alliances plugin) { 
 		this.plugin = plugin;
 	}
 	
@@ -69,11 +71,26 @@ public class CommandManager implements CommandExecutor {
 	 * @return BaseCommand or NULL
 	 */
 	public BaseCommand getBaseCommand(String command) {
-        if (commands.get(command).isAnnotationPresent(BaseCommand.class))
+        if (commands.get(command).isAnnotationPresent(BaseCommand.class)) {
             return commands.get(command).getAnnotation(BaseCommand.class);
+        }
         return null;
 	}
 	
+	/**
+	 * Get BaseCommands
+	 * 
+	 * @return Collection<BaseCommand>
+	 */
+	public Collection<BaseCommand> getBaseCommands() {
+		Collection<BaseCommand> bc = null;
+		for(Method method : commands.values()) {
+	        if (method.isAnnotationPresent(BaseCommand.class)) {
+	        	bc.add(method.getAnnotation(BaseCommand.class));
+	        }
+		}
+		return bc;
+	}
 		
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		if(args.length == 0) {
@@ -104,7 +121,7 @@ public class CommandManager implements CommandExecutor {
 			return false;
 		}
 		
-		dispatchCommand(args[0], sender, commandLabel, args);
+		dispatchCommand(args[0], sender, commandLabel, args, plugin);
 		return false;
 	}
 }
