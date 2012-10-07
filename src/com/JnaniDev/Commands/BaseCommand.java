@@ -1,7 +1,9 @@
 package com.JnaniDev.Commands;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * This annotation indicates a command. Methods should be marked with this
@@ -10,6 +12,7 @@ import java.lang.annotation.RetentionPolicy;
  *
  * @author ELCHILEN0
  */
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface BaseCommand {
 	/**
