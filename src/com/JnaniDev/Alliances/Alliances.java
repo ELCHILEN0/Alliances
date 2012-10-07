@@ -1,46 +1,41 @@
 package com.JnaniDev.Alliances;
 
 import java.io.File;
-import java.util.logging.Logger;
 
-import net.milkbowl.vault.economy.Economy;
-
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.JnaniDev.Alliances.Managers.AllianceManager;
 import com.JnaniDev.Alliances.Managers.CommandManager;
 import com.JnaniDev.Alliances.Managers.PlayerManager;
-import com.JnaniDev.Commands.InviteCmd;
+import com.JnaniDev.Commands.AllianceCommands;
+import com.JnaniDev.Commands.PlayerCommands;
 import com.JnaniDev.Commands.TestCmd;
 import com.JnaniDev.Listeners.BlockListener;
 import com.JnaniDev.Listeners.EntityListener;
 import com.JnaniDev.Listeners.PlayerListener;
+import com.JnaniDev.Util.Log;
 import com.JnaniDev.Util.SQL;
 
 public class Alliances extends JavaPlugin {
-	public final Logger log = Bukkit.getLogger();
-	public PluginDescriptionFile desc;
+	private PluginDescriptionFile desc;
 	private AllianceManager allianceManager;
 	private PlayerManager playerManager;
 	private CommandManager commandManager;
-	private Economy economy;
-	public SQL database;
+	private SQL database;
 
 	public void onEnable() {
 		long beginTime = System.currentTimeMillis();
 		
 		desc = getDescription();
 		reloadConfiguration();
+	    checkDatabase();
 		
 		// Setup Custom Managers
 		allianceManager = new AllianceManager(this);
 		playerManager = new PlayerManager(this);
 		commandManager = new CommandManager(this);
-		setupEconomy();
 		
 		// Setup HashMaps from SQL
 		// Players format is <PlayerName, PlayerObject>
@@ -48,63 +43,72 @@ public class Alliances extends JavaPlugin {
 		playerManager.loadPlayers();
 		allianceManager.loadAlliances();	
 		
-		// Setup Event Listeners
-		PluginManager pm = getServer().getPluginManager();
-		pm.registerEvents(new PlayerListener(this), this);
-		pm.registerEvents(new BlockListener(), this);
-		pm.registerEvents(new EntityListener(), this);
-		
 		// Setup save running every 1 minute
 		getServer().getScheduler().cancelTasks(this);
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, new SaveTask(this), 20 * 20L, 20 * 20L);
 		
 		// Setup Executors
-		getCommand("alliance").setExecutor(commandManager);
 		registerCommands();
 		
 	    long endTime = System.currentTimeMillis();
-	    log.info(desc.getName() + " version " + desc.getVersion() + " is enabled! Took " + (endTime - beginTime) + "ms.");
+	    Log.info(desc.getName() + " version " + desc.getVersion() + " is enabled! Took " + (endTime - beginTime) + "ms.");
     }
 
 	public void onDisable() {
     	playerManager.savePlayers();
     	allianceManager.saveAlliances();
-        log.info( desc.getName() + " version " + desc.getVersion() + " is disabled!" );
+        Log.info(desc.getName() + " version " + desc.getVersion() + " is disabled!");
     }
     
+	/**
+	 * Reload the configuration
+	 * If the file isn't found the file is created
+	 * Then the default configuration is written and reloaded
+	 */
 	public void reloadConfiguration() {		
 		// Configuration and database loading code
 	    if (!new File(getDataFolder(), "config.yml").exists())
 	        saveDefaultConfig();
 	    		
 		reloadConfig();
-	    checkDatabase();
 	}
 	
+	
+	
+	/**
+	 * Registers the EventHandlers
+	 */
+	public void registerEvents() {
+		PluginManager pm = getServer().getPluginManager();
+		pm.registerEvents(new PlayerListener(this), this);
+		pm.registerEvents(new BlockListener(), this);
+		pm.registerEvents(new EntityListener(), this);
+	}
+	
+	/**
+	 * Registers the Commands
+	 */
 	public void registerCommands() {
+		getCommand("alliance").setExecutor(commandManager);
 		commandManager.registerClass(TestCmd.class);
-		commandManager.registerClass(InviteCmd.class);
+		commandManager.registerClass(AllianceCommands.class);
+		commandManager.registerClass(PlayerCommands.class);
 	}
 	
-    private void setupEconomy() {    	
-    	if (getServer().getPluginManager().isPluginEnabled("Vault")) {
-			log.info("Vault found, preparing economy integration!");
-    	} else {
-    		log.info("Vault not found, disabling economoy integration!");
-    		return;
-    	}
-    	
-        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-        if (economyProvider != null) {
-            economy = economyProvider.getProvider();
-        }
-    }
-
 	
+	/**
+	 * Gets the Database and its connection
+	 * 
+	 * @return the SQL database
+	 */
 	public SQL getDb() {
 		return database;
 	}
 	
+	/** 
+	 * Checks the database preparing the connection
+	 * Then creating any tables that need to be created
+	 */
 	public void checkDatabase() {
 		database = null;
 		if(getConfig().getString("storage.type").equalsIgnoreCase("mysql")) {
@@ -153,15 +157,21 @@ public class Alliances extends JavaPlugin {
 		
 	}
 	
+	/**
+	 * Gets the AllianceManager
+	 * 
+	 * @return AllianceManager
+	 */
 	public AllianceManager getAllianceManager() {
 		return allianceManager;
 	}
 	
+	/**
+	 * Gets the PlayerManager
+	 * 
+	 * @return PlayerManager
+	 */
 	public PlayerManager getPlayerManager() {
 		return playerManager;
-	}
-
-	public Economy getEconomy() {
-		return economy;
 	}
 }
