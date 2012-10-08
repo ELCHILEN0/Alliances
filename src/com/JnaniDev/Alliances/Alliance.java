@@ -2,6 +2,7 @@ package com.JnaniDev.Alliances;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -98,6 +99,19 @@ public class Alliance implements Serializable {
 	
 	public void setLastLogin(Long lastLogin) {
 		this.lastLogin = lastLogin;
+	}
+	
+	public Map<String, Object> toMap() {
+		Map<String, Object> alliance = new HashMap<String, Object>();
+		alliance.put("name", name);
+		alliance.put("desc", desc);
+		alliance.put("partners", partners);
+		alliance.put("brothers", brothers);
+		alliance.put("enemies", enemies);
+		alliance.put("rivals", rivals);
+		alliance.put("invited", invited);
+		alliance.put("lastLogin", lastLogin);
+		return alliance;
 	}
 	
 	@SuppressWarnings("unchecked")

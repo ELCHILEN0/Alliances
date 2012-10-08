@@ -123,7 +123,6 @@ public class Alliances extends JavaPlugin {
 			database = new SQL(this, getDataFolder() + File.separator + "data.dat");
 		}
 		
-		
 		// Create players database
 		database.query("CREATE TABLE IF NOT EXISTS "
 				+ getConfig().getString("storage.tablePrefix") + "players" + " (" 

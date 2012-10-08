@@ -3,8 +3,9 @@ package com.JnaniDev.Util;
 import java.util.logging.Logger;
 
 public class Log {
-	private static final Logger log = Logger.getLogger("Minecraft");
-
+	// TODO: Change logger to Plugin.getLogger();
+	private static Logger log = Logger.getLogger("Minecraft");
+	
 	/**
 	 * Send an info level log message to console
 	 * @param msg message to send

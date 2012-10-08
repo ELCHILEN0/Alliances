@@ -24,6 +24,13 @@ public class PlayerManager {
 	}
 	
 	/**
+	 * Add a player to the players
+	 */
+	public void addPlayer(String name, AlliancePlayer player) {
+		players.put(name, player);
+	}
+	
+	/**
 	 * Get all the player names
 	 */
 	public Collection<String> getPlayerNames() {

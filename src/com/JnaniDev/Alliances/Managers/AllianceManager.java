@@ -12,6 +12,7 @@ import com.JnaniDev.Alliances.Alliance;
 import com.JnaniDev.Alliances.AlliancePlayer;
 import com.JnaniDev.Alliances.Alliances;
 import com.JnaniDev.Util.ArrayUtil;
+import com.JnaniDev.Util.Log;
 import com.JnaniDev.Util.SQL;
 
 public class AllianceManager {
@@ -52,6 +53,19 @@ public class AllianceManager {
 	
 	public boolean allianceExists(String name) {
 		return getAlliance(name) != null;
+	}
+	
+	/**
+	 * Get an Alliance ID
+	 * 
+	 * @param name
+	 */
+	public int getAllianceId(String name) {
+		for (int i = 0; i < alliances.size(); i++) {
+			if(alliances.get(i).getName().equals(name))
+				return i;
+		}
+		return 0;
 	}
 	
 	/**
@@ -126,17 +140,8 @@ public class AllianceManager {
 	 * 
 	 * @return int
 	 */
- 	public int createAlliance() {
-        Map<String, Object> alliance = new HashMap<String, Object>();
-        alliance.put("name","");
-        alliance.put("desc", "");
-        alliance.put("partners", "");
-        alliance.put("brothers", "");
-        alliance.put("enemies", "");
-        alliance.put("rivals", "");
-        alliance.put("invited", ArrayUtil.asList(""));
-        alliance.put("lastLogin", System.currentTimeMillis());
-        alliances.put(alliances.size() + 1, new Alliance(alliance));
+ 	public int createAlliance(Alliance alliance) {
+        alliances.put(alliances.size() + 1, alliance);
         return alliances.size() + 1;
 	}
 	

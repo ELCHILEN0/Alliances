@@ -2,13 +2,17 @@ package com.JnaniDev.Commands;
 
 import org.bukkit.command.CommandSender;
 
+import com.JnaniDev.Alliances.Alliance;
 import com.JnaniDev.Alliances.Alliances;
 
 public class AllianceCommands {
 	
 	@BaseCommand(aliases={"create"}, desc="Create an Alliance.", usage="<Name>", min=2, allowConsole=false)
 	public void create(CommandSender sender, String commandLabel, String[] args, Alliances plugin) {
-
+		Alliance alliance = new Alliance();
+		alliance.setName(args[1]);
+		
+		plugin.getAllianceManager().createAlliance(alliance);
 	}
 	
 	@BaseCommand(aliases={"disband"}, desc="Disband your Alliance.", min=1, allowConsole=false)
