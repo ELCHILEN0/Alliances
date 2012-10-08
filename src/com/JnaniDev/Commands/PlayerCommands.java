@@ -1,6 +1,7 @@
 package com.JnaniDev.Commands;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import com.JnaniDev.Alliances.Alliance;
 import com.JnaniDev.Alliances.AlliancePlayer;
@@ -11,7 +12,6 @@ public class PlayerCommands {
 	public void join(CommandSender sender, String commandLabel, String[] args, Alliances plugin) {
 		AlliancePlayer player = plugin.getPlayerManager().getPlayer(sender.getName());
 		Alliance alliance = plugin.getAllianceManager().getAlliance(args[1]);
-		if(player == null) player = new AlliancePlayer();
 		
 		if(alliance == null) {
 			sender.sendMessage("The specified Alliance doesnt exist!");
@@ -28,13 +28,30 @@ public class PlayerCommands {
 			return;
 		}
 				
-		alliance.uninvite(sender.getName());
-		player.setAlliance(plugin.getAllianceManager().getAllianceId(args[1]));
+		for(Player p : plugin.getAllianceManager().getOnlinePlayers(plugin.getAllianceManager().getAllianceId(args[1])))
+			p.sendMessage(sender.getName() + " has joined your Alliance!");
 		sender.sendMessage("You have joined " + alliance.getName());
+
+		player.setAlliance(plugin.getAllianceManager().getAllianceId(args[1]));
+		alliance.uninvite(sender.getName());
+
 	}
 	
 	@BaseCommand(aliases={"leave", "enter"}, desc="Leave your Alliance.", usage="", min=1, allowConsole=false)
 	public void leave(CommandSender sender, String commandLabel, String[] args, Alliances plugin) {
-
+		AlliancePlayer player = plugin.getPlayerManager().getPlayer(sender.getName());
+		Alliance alliance = plugin.getAllianceManager().getAlliance(player.getAlliance());
+		
+		if(!(player.isInAlliance())) {
+			sender.sendMessage("You are not in any Alliance!");
+			return;
+		}
+				
+		player.setAlliance(0);
+		alliance.uninvite(sender.getName());
+		
+		sender.sendMessage("You have left " + alliance.getName());
+		for(Player p : plugin.getAllianceManager().getOnlinePlayers(plugin.getAllianceManager().getAllianceId(args[1])))
+			p.sendMessage(sender.getName() + " has left your Alliance!");
 	}
 }
