@@ -61,9 +61,10 @@ public class AllianceManager {
 	 * @param name
 	 */
 	public int getAllianceId(String name) {
-		for (int i = 0; i < alliances.size(); i++) {
-			if(alliances.get(i).getName().equals(name))
+		for(int i : alliances.keySet()) {
+			if(alliances.get(i).getName().equals(name)) {
 				return i;
+			}
 		}
 		return 0;
 	}

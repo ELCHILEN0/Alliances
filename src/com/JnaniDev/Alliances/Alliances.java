@@ -44,6 +44,8 @@ public class Alliances extends JavaPlugin {
 		playerManager.loadPlayers();
 		allianceManager.loadAlliances();	
 		
+		registerEvents();
+		
 		// Setup save running every 1 minute
 		getServer().getScheduler().cancelTasks(this);
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, new SaveTask(this), 20 * 20L, 20 * 20L);

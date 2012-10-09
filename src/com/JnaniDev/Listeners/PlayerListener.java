@@ -20,13 +20,16 @@ public class PlayerListener implements Listener {
 
 	// Sets and updates player tables when they join.
 	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent event) {
-		String player = event.getPlayer().getName();
-		if (!(plugin.getPlayerManager().players.containsKey(player))) {
-			plugin.getPlayerManager().players.put(player, new AlliancePlayer());
+	public void onPlayerJoin(PlayerJoinEvent event) {		
+		AlliancePlayer player = plugin.getPlayerManager().getPlayer(event.getPlayer());
+		if(player == null) {
+			player = new AlliancePlayer();
+			plugin.getPlayerManager().addPlayer(event.getPlayer().getName(), player);
 		}
-		plugin.getPlayerManager().players.get(player).updateLogin();
-		plugin.getPlayerManager().savePlayer(player);
+		
+		player.updateLogin();
+		System.out.println(player.getLastLogin());
+		plugin.getPlayerManager().savePlayer(event.getPlayer().getName());
 	}
 	
 	// Sets and updates player tables when they leave.
@@ -34,9 +37,9 @@ public class PlayerListener implements Listener {
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		String player = event.getPlayer().getName();
 		if (!(plugin.getPlayerManager().players.containsKey(player))) {
-			plugin.getPlayerManager().players.put(player, new AlliancePlayer());
+			plugin.getPlayerManager().addPlayer(player, new AlliancePlayer());
 		}
-		plugin.getPlayerManager().players.get(player).updateLogin();
+		plugin.getPlayerManager().getPlayer(player).updateLogin();
 		plugin.getPlayerManager().savePlayer(player);
 	}
 	
