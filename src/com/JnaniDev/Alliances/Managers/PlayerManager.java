@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -33,7 +34,7 @@ public class PlayerManager {
 	/**
 	 * Get all the player names
 	 */
-	public Collection<String> getPlayerNames() {
+	public Set<String> getPlayerNames() {
 		return players.keySet();
 	}
 	

@@ -12,7 +12,8 @@ public class PlayerCommands {
 	@BaseCommand(aliases={"join", "enter"}, desc="Join an Alliance.", usage="<Name>", min=2, allowConsole=false)
 	public void join(CommandSender sender, String commandLabel, String[] args, Alliances plugin) {
 		AlliancePlayer player = plugin.getPlayerManager().getPlayer(sender);
-		Alliance alliance = plugin.getAllianceManager().getAlliance(args[1]);
+		int id = plugin.getAllianceManager().getID(args[1]);
+		Alliance alliance = plugin.getAllianceManager().getAlliance(id);
 		
 		if(alliance == null) {
 			sender.sendMessage("The specified Alliance doesnt exist!");
@@ -29,11 +30,11 @@ public class PlayerCommands {
 			return;
 		}
 				
-		for(Player p : plugin.getAllianceManager().getOnlinePlayers(plugin.getAllianceManager().getAllianceId(args[1])))
+		for(Player p : plugin.getAllianceManager().getOnlinePlayers(id))
 			p.sendMessage(sender.getName() + " has joined your Alliance!");
 		sender.sendMessage("You have joined " + alliance.getName());
 
-		player.setAlliance(plugin.getAllianceManager().getAllianceId(args[1]));
+		player.setAlliance(id);
 		alliance.uninvite(sender.getName());
 
 	}

@@ -2,9 +2,10 @@ package com.JnaniDev.Alliances.Managers;
 
 import java.sql.ResultSet;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.entity.Player;
 
@@ -12,7 +13,6 @@ import com.JnaniDev.Alliances.Alliance;
 import com.JnaniDev.Alliances.AlliancePlayer;
 import com.JnaniDev.Alliances.Alliances;
 import com.JnaniDev.Util.ArrayUtil;
-import com.JnaniDev.Util.Log;
 import com.JnaniDev.Util.SQL;
 
 public class AllianceManager {
@@ -38,21 +38,8 @@ public class AllianceManager {
 	/**
 	 * Get all the Alliance ID's
 	 */
-	public Collection<Integer> getAllianceIDs() {
+	public Set<Integer> getAllianceIDs() {
 		return alliances.keySet();
-	}
-	
-	/**
-	 * Check if an Alliance exists
-	 * @param id
-	 * @param name
-	 */
-	public boolean allianceExists(int id) {
-		return getAlliance(id) != null;
-	}
-	
-	public boolean allianceExists(String name) {
-		return getAlliance(name) != null;
 	}
 	
 	/**
@@ -60,7 +47,7 @@ public class AllianceManager {
 	 * 
 	 * @param name
 	 */
-	public int getAllianceId(String name) {
+	public int getID(String name) {
 		for(int i : alliances.keySet()) {
 			if(alliances.get(i).getName().equals(name)) {
 				return i;
@@ -78,24 +65,20 @@ public class AllianceManager {
 	}
 	
 	/**
-	 * Get an Alliance by its name
+	 * Check if an Alliance exists
+	 * @param id
 	 * @param name
 	 */
-	public Alliance getAlliance(String name) {
-		for(Integer key : getAllianceIDs()) {
-			if(getAlliance(key).getName().equals(name)) {
-				return getAlliance(key);
-			}
-		}
-		return null;
+	public boolean allianceExists(int id) {
+		return getAlliance(id) != null;
 	}
 	
 	/**
 	 * Gets player names in a specific Alliance
 	 * @param id
 	 */
-	public Collection<String> getPlayerNames(int id) {
-		Collection<String> names = Collections.emptySet();
+	public Set<String> getPlayerNames(int id) {
+		Set<String> names = new HashSet<String>();
 
 		for(String name : plugin.getPlayerManager().getPlayerNames()) {
 			if(plugin.getPlayerManager().getPlayer(name).getAlliance() == id) {
@@ -109,8 +92,8 @@ public class AllianceManager {
 	 * Gets AlliancePlayers in a specific Alliance
 	 * @param id
 	 */
-	public Collection<AlliancePlayer> getPlayers(int id) {
-		Collection<AlliancePlayer> players = Collections.emptySet();
+	public Set<AlliancePlayer> getAlliancePlayers(int id) {
+		Set<AlliancePlayer> players = new HashSet<AlliancePlayer>();
 
 		for(AlliancePlayer player : plugin.getPlayerManager().getPlayers()) {
 			if(player.getAlliance() == id) {
@@ -121,11 +104,11 @@ public class AllianceManager {
 	}
 	
 	/**
-	 * Gets Players in a specific Alliance
+	 * Gets OnlinePlayers in a specific Alliance
 	 * @param id
 	 */
-	public Collection<Player> getOnlinePlayers(int id) {
-		Collection<Player> players = Collections.emptySet();
+	public Set<Player> getOnlinePlayers(int id) {
+		Set<Player> players = new HashSet<Player>();
 		
 		for(Player player : plugin.getServer().getOnlinePlayers()) {
 			if(getPlayerNames(id).contains(player.getName())) {
